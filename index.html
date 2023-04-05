@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#rectangle {
+  width: 200px;
+  height: 100px;
+  background: green;
+}
+
+#result {
+  width: 200px;
+  height: 100px;
+  background: red;
+}
+
+button {
+  margin: 5px;
+}
+
+#countdown {
+  font-size: 36px;
+}
+
+#clicks {
+  display: inline-block;
+  vertical-align: top;
+}
+</style>
+</head>
+<body>
+
+<h2>Mouse Click Counter ( Tác Giả: KHOA MỘT NẮNG ) </h2>
+				
+
+<div id="rectangle"></div>
+
+<label for="time">Choose a time:</label>
+<select name="time" id="time">
+  <option value="10">10s</option>
+  <option value="20">20s</option>
+  <option value="30">30s</option>
+  <option value="40">40s</option>
+  <option value="50">50s</option>
+  <option value="60">60s</option>
+</select>
+
+<button id="startButton" style="background-color:red;">Start</button>
+
+<div id="countdown"></div>
+
+<div id="result"></div>
+
+<div id="clicks">
+Total clicks: <span id="totalClickCount">0</span><br>
+Time left: <span id="timeLeft"></span><br>
+</div>
+
+<script>
+
+let leftClickCount = 0;
+let rightClickCount = 0;
+let wheelClickCount = 0;
+
+let startTime = null;
+let endTime = null;
+
+document.getElementById('rectangle').addEventListener('mousedown', function(event) {
+    if (startTime !== null && new Date().getTime() < endTime) {
+        if (event.button === 0) {
+            leftClickCount++;
+        } else if (event.button === 1) {
+            wheelClickCount++;
+        } else if (event.button === 2) {
+            rightClickCount++;
+        }
+        document.getElementById('totalClickCount').innerHTML = leftClickCount + rightClickCount + wheelClickCount;
+    }
+});
+
+document.getElementById('startButton').addEventListener('click', function(event) {
+    leftClickCount = 0;
+    rightClickCount = 0;
+    wheelClickCount = 0;
+
+    let time = document.getElementById('time').value;
+
+    document.getElementById('result').innerHTML = 'Starting in...';
+    let countdown = 5;
+    let countdownInterval = setInterval(function() {
+        document.getElementById('countdown').innerHTML = countdown + 's';
+        countdown--;
+        if (countdown < -1) {
+            clearInterval(countdownInterval);
+            document.getElementById('countdown').innerHTML = '';
+            startTime = new Date().getTime();
+            endTime = startTime + time * 1000;
+
+            document.getElementById('result').innerHTML = 'Started!';
+            setTimeout(function() {
+                document.getElementById('result').innerHTML = 'Time is up! Left clicks: ' + leftClickCount + '<br>Right clicks: ' + rightClickCount + '<br>Wheel clicks: ' + wheelClickCount;
+                startTime = null;
+                endTime = null;
+            }, time * 1000);
+
+            countdown = parseInt(time);
+            countdownInterval = setInterval(function() {
+                document.getElementById('timeLeft').innerHTML = countdown + 's';
+                countdown--;
+                if (countdown < -1) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('timeLeft').innerHTML = '';
+                }
+            }, 1000);
+        }
+    }, 1000);
+});
+
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+});
+
+</script>
+
+</body>
+</html>
